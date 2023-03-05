@@ -1,1 +1,25 @@
-* proid
+#+title: Proid
+#+author: Christopher
+
+* Introduction
+Proid is a command-line tool that allows you to hide and show windows in X.
+
+* Installation
+The easiest way to build install proid is to use [[https://docs.haskellstack.org/en/stable/install_and_upgrade/][stack]]:
+
+After you have installed stack, use the following command to compile from source:
+
+#+begin_src sh
+stack setup
+stack install
+#+end_src sh
+
+~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the proid executable into =~/.local/bin=, which you should add to your PATH.
+
+* Usage
+To hide the current window, you need to run ~proid hide~. If you run it in a terminal window, it will hide the terminal. It is recommended to bind the proid options to a keybinding so that it can work on any program.
+
+Proid shows windows in the opposite order that you hid them in. It will show the most recently hid one first. You can show windows using ~proid show~.
+
+* License
+GNU GPLv3
