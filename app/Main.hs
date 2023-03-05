@@ -14,7 +14,7 @@ main :: IO ()
 main = do
   args <- getArgs
   if null args
-    then hPutStrLn stderr "No arguments provided!"
+    then hPutStrLn stderr "No arguments provided"
     else handle (head args)
 
 handle :: String -> IO ()
@@ -23,7 +23,7 @@ handle action = case action of
   "show" -> proidshow ".proidlog"
   "desshow" -> proidshow ".desproidlog"
   "deshide" -> proidhide ".desproidlog"
-  _ -> hPutStrLn stderr "No valid arguments"
+  _ -> hPutStrLn stderr "No valid arguments" >> exitFailure
 
 proidhide :: [Char] -> IO ()
 proidhide filename = do
@@ -47,10 +47,6 @@ write filename string = do
 
 erase :: [Char] -> [Char] -> IO String
 erase directory filename = do
-  -- exists <- doesFileExist filename
-  -- if exists
-  --   then appendFile filename string
-  --   else writeFile filename string
   let path = directory ++ filename
   exists <- doesFileExist path
   if exists
@@ -63,9 +59,5 @@ erase directory filename = do
           tmp <- writeTempFile directory filename (intercalate "\n" (init list))
           renameFile tmp path
           return proid
-        else do
-          hPutStrLn stderr "No window to show"
-          exitFailure
-    else do
-      hPutStrLn stderr "No window to show"
-      exitFailure
+        else hPutStrLn stderr "No window to show" >> exitFailure
+    else hPutStrLn stderr "No window to show" >> exitFailure
