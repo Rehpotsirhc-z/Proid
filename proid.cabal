@@ -5,66 +5,24 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           proid
-version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/proid#readme>
-homepage:       https://github.com/githubuser/proid#readme
-bug-reports:    https://github.com/githubuser/proid/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2023 Author name here
-license:        BSD3
-license-file:   LICENSE
+version:        0.5.2.0
+author:         Christopher
+maintainer:     Christopher
+license:        GPL-3
 build-type:     Simple
 extra-source-files:
-    README.md
-    CHANGELOG.md
-
-source-repository head
-  type: git
-  location: https://github.com/githubuser/proid
-
-library
-  exposed-modules:
-      Lib
-  other-modules:
-      Paths_proid
-  hs-source-dirs:
-      src
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
-  build-depends:
-      base >=4.7 && <5
-    , directory
-    , process
-    , temporary
-  default-language: Haskell2010
+    README.org
 
 executable proid
   main-is: Main.hs
   other-modules:
       Paths_proid
   hs-source-dirs:
-      app
+      src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , directory
     , process
-    , proid
-    , temporary
-  default-language: Haskell2010
-
-test-suite proid-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Paths_proid
-  hs-source-dirs:
-      test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base >=4.7 && <5
-    , directory
-    , process
-    , proid
     , temporary
   default-language: Haskell2010

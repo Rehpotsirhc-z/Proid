@@ -5,7 +5,7 @@ module Main (main) where
 import Data.List (intercalate)
 import System.Directory (doesFileExist, getHomeDirectory, renameFile)
 import System.Environment (getArgs)
-import System.Exit
+import System.Exit (exitFailure)
 import System.IO (hPutStrLn, stderr)
 import System.IO.Temp (writeTempFile)
 import System.Process (callProcess, readProcess)
