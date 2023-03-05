@@ -3,48 +3,69 @@ module Main (main) where
 -- import Lib
 
 import Data.List (intercalate)
-import System.Directory (getHomeDirectory, renameFile)
+import System.Directory (doesFileExist, getHomeDirectory, renameFile)
 import System.Environment (getArgs)
-import System.IO (IOMode (AppendMode), hClose, hPutStr, hPutStrLn, openFile, stderr)
+import System.Exit
+import System.IO (hPutStrLn, stderr)
 import System.IO.Temp (writeTempFile)
-import System.Process (readProcess)
+import System.Process (callProcess, readProcess)
 
 main :: IO ()
 main = do
   args <- getArgs
   if null args
-    then hPutStrLn stderr "No arguments provided"
+    then hPutStrLn stderr "No arguments provided!"
     else handle (head args)
 
 handle :: String -> IO ()
 handle action = case action of
-  "hide" -> proidhide
-  "show" -> proidshow
+  "hide" -> proidhide ".proidlog"
+  "show" -> proidshow ".proidlog"
+  "desshow" -> proidshow ".desproidlog"
+  "deshide" -> proidhide ".desproidlog"
   _ -> hPutStrLn stderr "No valid arguments"
 
-proidhide :: IO ()
-proidhide = do
+proidhide :: [Char] -> IO ()
+proidhide filename = do
   proid <- readProcess "xdo" ["id"] []
   home <- getHomeDirectory
-  write (home ++ "/.config/.proidlog") proid
+  write (home ++ "/.config/" ++ filename) proid
+  callProcess "xdo" ["hide", init proid]
 
-proidshow :: IO ()
-proidshow = do
+proidshow :: [Char] -> IO ()
+proidshow filename = do
   home <- getHomeDirectory
-  erase (home ++ "/.config/.proidlog")
+  proid <- erase (home ++ "/.config/") filename
+  callProcess "xdo" ["show", proid]
 
 write :: FilePath -> String -> IO ()
 write filename string = do
-  file <- openFile filename AppendMode
-  hPutStr file string
-  hClose file
+  exists <- doesFileExist filename
+  if exists
+    then appendFile filename string
+    else writeFile filename string
 
-erase :: FilePath -> IO ()
-erase filename = do
-  text <- readFile filename
-  -- TODO: empty file
-  let list = lines text
-  let proid = last list
-  tmp <- writeTempFile "/home/rehpotsirhc/.config" ".proidlog" (intercalate "\n" (init list))
-  print proid
-  renameFile tmp filename
+erase :: [Char] -> [Char] -> IO String
+erase directory filename = do
+  -- exists <- doesFileExist filename
+  -- if exists
+  --   then appendFile filename string
+  --   else writeFile filename string
+  let path = directory ++ filename
+  exists <- doesFileExist path
+  if exists
+    then do
+      text <- readFile path
+      if not $ null text
+        then do
+          let list = lines text
+          let proid = last list
+          tmp <- writeTempFile directory filename (intercalate "\n" (init list))
+          renameFile tmp path
+          return proid
+        else do
+          hPutStrLn stderr "No window to show"
+          exitFailure
+    else do
+      hPutStrLn stderr "No window to show"
+      exitFailure
