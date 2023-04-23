@@ -19,7 +19,11 @@ stack install
 * Usage
 To hide the current window, you need to run ~proid hide~. If you run it in a terminal window, it will hide the terminal. It is recommended to bind the proid options to a keybinding so that it can work on any program.
 
-Proid shows windows in the opposite order that you hid them in. It will show the most recently hid one first. You can show windows using ~proid show~.
+Proid shows windows in the opposite order that you hid them in. It will show the most recently hidden one first. You can show windows using ~proid show~.
+
+Sometimes, you may need two lists for windows to hide. You can use ~proid deshide~ to hide a window, saving it to a special list. The next time you do ~proid show~, that window will not show and it will instead show the window hidden normally. You can then show the special windows by doing ~proid desshow~.
+
+This is useful when you want to switch between seeing two windows. If you were to hide them both with ~proid hide~, you would have to show both of them and then hide one to see it. With ~proid deshide~, you will be able to make one of them special and one of them normal, allowing you to alternate which one you want to be shown.
 
 * License
 GNU GPLv3

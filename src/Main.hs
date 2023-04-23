@@ -1,8 +1,7 @@
 module Main (main) where
 
--- import Lib
-
 import Data.List (intercalate)
+import System.Console.ANSI
 import System.Directory (doesFileExist, getHomeDirectory, renameFile)
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
@@ -13,40 +12,61 @@ import System.Process (callProcess, readProcess)
 main :: IO ()
 main = do
   args <- getArgs
-  if null args
-    then hPutStrLn stderr "No arguments provided"
-    else handle (head args)
+  handle args
 
-handle :: String -> IO ()
-handle action = case action of
-  "hide" -> proidhide ".proidlog"
-  "show" -> proidshow ".proidlog"
-  "desshow" -> proidshow ".desproidlog"
-  "deshide" -> proidhide ".desproidlog"
-  _ -> hPutStrLn stderr "No valid arguments" >> exitFailure
+printError :: [Char] -> IO ()
+printError str = hPutStrLn stderr $ setSGRCode [SetColor Foreground Vivid Red] ++ str ++ setSGRCode [Reset]
 
-proidhide :: [Char] -> IO ()
-proidhide filename = do
+handle :: [String] -> IO ()
+handle [] = printError "No arguments provided" >> hPutStrLn stderr "Try --help for more information" >> exitFailure
+handle ["--help"] = printHelp
+handle ["-h"] = printHelp
+handle ["hide"] = proidHide ".proidlog"
+handle ["show"] = proidShow ".proidlog"
+handle ["deshide"] = proidHide ".desproidlog"
+handle ["desshow"] = proidShow ".desproidlog"
+handle [_] = printError "Invalid argument" >> hPutStrLn stderr "Try --help for more information" >> exitFailure
+handle (_ : _) = printError "You can only specify one argument" >> hPutStrLn stderr "Try --help for more information" >> exitFailure
+
+printHelp :: IO ()
+printHelp = do
+  putStrLn "Usage: proid [OPTION]"
+  putStrLn "Hides and shows windows"
+  putStrLn ""
+  putStrLn "Options:"
+  putStrLn "  hide        Hide the current window"
+  putStrLn "  show        Show the most recently hidden window"
+  putStrLn "  deshide     Hide the current window with a priority"
+  putStrLn "  desshow     Show the most recently hiddne window with a priority"
+  putStrLn "  --help      Show this help message"
+  putStrLn ""
+  putStrLn "Examples:"
+  putStrLn "  proid hide"
+  putStrLn "  proid show"
+  putStrLn "  proid deshide"
+
+proidHide :: FilePath -> IO ()
+proidHide filename = do
   proid <- readProcess "xdo" ["id"] []
   home <- getHomeDirectory
-  write (home ++ "/.config/" ++ filename) proid
+  writeToFile (home ++ "/.config/" ++ filename) proid
   callProcess "xdo" ["hide", init proid]
 
-proidshow :: [Char] -> IO ()
-proidshow filename = do
+proidShow :: FilePath -> IO ()
+proidShow filename = do
   home <- getHomeDirectory
-  proid <- erase (home ++ "/.config/") filename
+  proid <- eraseFromFile (home ++ "/.config/") filename
   callProcess "xdo" ["show", proid]
 
-write :: FilePath -> String -> IO ()
-write filename string = do
+writeToFile :: FilePath -> String -> IO ()
+writeToFile filename string = do
   exists <- doesFileExist filename
   if exists
     then appendFile filename string
     else writeFile filename string
 
-erase :: [Char] -> [Char] -> IO String
-erase directory filename = do
+eraseFromFile :: FilePath -> FilePath -> IO String
+eraseFromFile directory filename = do
   let path = directory ++ filename
   exists <- doesFileExist path
   if exists
@@ -59,5 +79,5 @@ erase directory filename = do
           tmp <- writeTempFile directory filename (intercalate "\n" (init list))
           renameFile tmp path
           return proid
-        else hPutStrLn stderr "No window to show" >> exitFailure
-    else hPutStrLn stderr "No window to show" >> exitFailure
+        else printError "No window to show" >> exitFailure
+    else printError "No window to show" >> exitFailure

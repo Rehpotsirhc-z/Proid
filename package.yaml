@@ -11,6 +11,7 @@ dependencies:
 - process
 - directory
 - temporary
+- ansi-terminal
 
 ghc-options:
 - -Wall
