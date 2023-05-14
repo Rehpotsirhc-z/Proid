@@ -2,6 +2,12 @@ module Main (main) where
 
 import Data.List (intercalate)
 import System.Console.ANSI
+  ( Color (Red),
+    ColorIntensity (Vivid),
+    ConsoleLayer (Foreground),
+    SGR (Reset, SetColor),
+    setSGRCode,
+  )
 import System.Directory (doesFileExist, getHomeDirectory, renameFile)
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
@@ -47,16 +53,16 @@ printHelp = do
 
 proidHide :: FilePath -> IO ()
 proidHide filename = do
-  proid <- readProcess "xdo" ["id"] []
+  proid <- readProcess "xdotool" ["getactivewindow"] []
   home <- getHomeDirectory
   writeToFile (home ++ "/.config/" ++ filename) proid
-  callProcess "xdo" ["hide", init proid]
+  callProcess "xdotool" ["windowunmap", init proid]
 
 proidShow :: FilePath -> IO ()
 proidShow filename = do
   home <- getHomeDirectory
   proid <- eraseFromFile (home ++ "/.config/") filename
-  callProcess "xdo" ["show", proid]
+  callProcess "xdotool" ["windowmap", proid]
 
 writeToFile :: FilePath -> String -> IO ()
 writeToFile filename string = do

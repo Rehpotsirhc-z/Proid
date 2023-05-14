@@ -20,7 +20,7 @@ stack install
 If you are on Arch Linux, you can find Proid in the [[https://aur.archlinux.org/packages/proid][AUR]]. Simply clone the repository and then run ~makepkg -si~, or install it using an AUR helper like paru.
 
 * Dependencies
-The only dependency that is required for Proid to run is xdo. However, you will need Stack to build Proid.
+The only dependency that is required for Proid to run is xdotool. However, you will need Stack to build Proid.
 
 * Usage
 To hide the current window, you need to run ~proid hide~. If you run it in a terminal window, it will hide the terminal. It is recommended to bind the proid options to a keybinding so that it can work on any program.
