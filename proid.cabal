@@ -19,7 +19,7 @@ executable proid
   other-modules:
       Paths_proid
   hs-source-dirs:
-      src
+      app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       ansi-terminal
