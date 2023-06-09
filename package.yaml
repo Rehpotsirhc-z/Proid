@@ -1,10 +1,16 @@
 name:                proid
-version:             0.5.3.0
+version:             0.5.4.0
 license:             GPL-3
 author:              "Christopher"
 
 extra-source-files:
 - README.org
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+description:         Please see the README on GitLab at https://gitlab.com/rehposuite/proid
 
 dependencies:
 - base >= 4.7 && < 5
@@ -12,6 +18,8 @@ dependencies:
 - directory
 - temporary
 - ansi-terminal
+- string-qq
+- filepath
 
 ghc-options:
 - -Wall
@@ -24,6 +32,9 @@ ghc-options:
 - -Wpartial-fields
 - -Wredundant-constraints
 
+library:
+  source-dirs: src
+
 executables:
   proid:
     main:                Main.hs
@@ -32,3 +43,5 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    dependencies:
+    - proid
