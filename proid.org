@@ -1,4 +1,45 @@
--- [[file:../proid.org::*Imports][Imports:1]]
+#+title: Proid
+#+author: Christopher
+#+property: header-args :tangle "app/Main.hs" :comments link :mkdirp yes
+#+export_file_name: README
+
+* Introduction
+Proid is a command-line tool that allows you to hide and show windows in X.
+
+* Installation
+The easiest way to build Proid is to use [[https://docs.haskellstack.org/en/stable/install_and_upgrade/][Stack]]:
+
+After you have installed Stack, use the following command to compile from source:
+
+#+begin_src sh :tangle no
+stack setup
+stack install
+#+end_src sh
+
+~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the Proid executable into =~/.local/bin=, which you should add to your PATH.
+
+** Arch Linux
+If you are on Arch Linux, you can find Proid in the [[https://aur.archlinux.org/packages/proid][AUR]]. Simply clone the repository and then run ~makepkg -si~, or install it using an AUR helper like paru.
+
+* Dependencies
+The only dependency that is required for Proid to run is xdotool. However, you will need Stack to build Proid.
+
+* Usage
+To hide the current window, you need to run ~proid hide~. If you run it in a terminal window, it will hide the terminal. It is recommended to bind the Proid options to a keybinding so that it can work on any program.
+
+Proid shows windows in the opposite order that you hid them in. It will show the most recently hidden one first. You can show windows using ~proid show~.
+
+Sometimes, you may need two lists for windows to hide. You can use ~proid deshide~ to hide a window, saving it to a special list. The next time you do ~proid show~, that window will not show and it will instead show the window hidden normally. You can then show the special windows by doing ~proid desshow~.
+
+This is useful when you want to switch between seeing two windows. If you were to hide them both with ~proid hide~, you would have to show both of them and then hide one to see it. With ~proid deshide~, you will be able to make one of them special and one of them normal, allowing you to alternate which one you want to be shown.
+
+* License
+GNU GPLv3
+
+* Imports
+This section imports some modules and sets language pragmas.
+
+#+begin_src haskell
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main (main) where
@@ -29,21 +70,30 @@ import System.IO.Error
   )
 import System.IO.Temp (writeSystemTempFile)
 import System.Process (callProcess, readProcess)
--- Imports:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Data Types][Data Types:1]]
+* Data Types
+Here we define the ~ProidMode~ data type that we will use later.
+
+#+begin_src haskell
 data ProidMode = Read | Write deriving (Show, Read, Eq)
--- Data Types:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Main][Main:1]]
+* Main
+This section gets the arguments passed into the program and passes them into ~handleArgs~.
+
+#+begin_src haskell
 main :: IO ()
 main = do
   args <- getArgs
   tmpDir <- getTemporaryDirectory
   handleArgs tmpDir args
--- Main:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Arguments][Arguments:1]]
+* Arguments
+This section handles arguments by displaying errors if the syntax isn't met.
+
+#+begin_src haskell
 handleArgs :: FilePath -> [String] -> IO ()
 handleArgs _ [] = do
   printError "No arguments provided"
@@ -56,9 +106,11 @@ handleArgs _ (_ : _) = do
   printError "You can only specify one argument"
   hPutStrLn stderr "Try --help for more information"
   exitFailure
--- Arguments:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Arguments][Arguments:2]]
+If the syntax matches, then it will run ~dispatch~, which will match a keyword to its corresponding function based on ~actionMap~.
+
+#+begin_src haskell
 actionMap :: [(String, (FilePath -> FilePath -> IO (), String))]
 actionMap =
   [ ("hide", (proidHide, "proidlog")),
@@ -73,9 +125,15 @@ dispatch _ Nothing = do
   hPutStrLn stderr "Try --help for more information"
   exitFailure
 dispatch tmpDir (Just (action, filename)) = action tmpDir filename
--- Arguments:2 ends here
+#+end_src
 
--- [[file:../proid.org::*Hide][Hide:1]]
+* Actions
+Actions are the core functionality of Proid. You can either hide or show windows, which are made possible with ~proidHide~ and ~proidShow~ respectively.
+
+** Hide
+This function allows the user the hide windows. It uses xdotool to get the window ID and store it a log file. Then it uses xdotool to hide that window from the user. Potential errors are caught using the handlers defined above.
+
+#+begin_src haskell
 proidHide :: FilePath -> FilePath -> IO ()
 proidHide tmpDir filename = do
   proid <-
@@ -84,17 +142,26 @@ proidHide tmpDir filename = do
   writeToFile (tmpDir </> filename) proid
   callProcess "xdotool" ["windowunmap", init proid]
     `catchIOError` xdotoolError
--- Hide:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Show][Show:1]]
+** Show
+This function allows the user to show windows. It reads the last window ID from the log and removes that line. Then it uses xdotool to show the window again.
+
+#+begin_src haskell
 proidShow :: FilePath -> FilePath -> IO ()
 proidShow tmpDir filename = do
   proid <- eraseFromFile (tmpDir </> filename)
   callProcess "xdotool" ["windowmap", proid]
     `catchIOError` xdotoolError
--- Show:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Write][Write:1]]
+* File Operations
+This section contains the "meat" of the program; most of the functionality from previous functions are defined here. It contains the ~writeToFile~ function and the ~eraseFromFile~ function, to add and remove the window ID from the log.
+
+** Write
+This function appends text to a file. Errors are caught with ~handleLogError~.
+
+#+begin_src haskell
 writeToFile :: FilePath -> String -> IO ()
 writeToFile filename string =
   catchIOError
@@ -108,9 +175,12 @@ writeToFile filename string =
         printError (handleLogError Write filename "Couldn't access temporary directory" e)
           >> exitFailure
     )
--- Write:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Erase][Erase:1]]
+** Erase
+This function removes the last line from a file and returns that line.
+
+#+begin_src haskell
 eraseFromFile :: FilePath -> IO String
 eraseFromFile path = do
   let filename = takeFileName path
@@ -135,18 +205,24 @@ eraseFromFile path = do
       renameFile tmp path
         `catchIOError` (\e -> printError (handleLogError Write path "" e) >> exitFailure)
       return proid
--- Erase:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Error Messages][Error Messages:1]]
+* Error Messages
+This section defines a helper function that will print errors in red.
+
+#+begin_src haskell
 printError :: String -> IO ()
 printError str =
   hPutStrLn stderr $
     setSGRCode [SetColor Foreground Vivid Red]
       ++ str
       ++ setSGRCode [Reset]
--- Error Messages:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Errors][Errors:1]]
+* Errors
+This section defines some functions that will handle potential errors.
+
+#+begin_src haskell
 handleLogError :: ProidMode -> String -> String -> IOError -> String
 handleLogError action file message e
   | isDoesNotExistError e = message
@@ -168,9 +244,12 @@ xdotoolError :: p -> IO b
 xdotoolError _ = do
   printError "Failed to run xdotool (maybe it is not installed)"
   exitFailure
--- Errors:1 ends here
+#+end_src
 
--- [[file:../proid.org::*Help][Help:1]]
+* Help
+In this section, a simple function is defined that prints a help message.
+
+#+begin_src haskell
 printHelp :: IO ()
 printHelp = putStrLn helpMessage
   where
@@ -190,4 +269,9 @@ Examples:
   proid hide
   proid show
   proid deshide|]
--- Help:1 ends here
+#+end_src
+
+# Local Variables:
+# eval: (add-to-list 'after-save-hook 'org-babel-tangle)
+# eval: (add-to-list 'after-save-hook 'org-org-export-to-org)
+# End:
