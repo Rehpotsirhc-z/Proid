@@ -1,4 +1,4 @@
-# Created 2023-06-22 Thu 18:00
+# Created 2023-06-22 Thu 18:02
 #+title: Proid
 #+author: Christopher
 #+property: header-args :tangle "app/Main.hs" :comments link :mkdirp yes
@@ -20,7 +20,7 @@ stack install
 ~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the Proid executable into =~/.local/bin=, which you should add to your PATH.
 
 ** Arch Linux
-If you are on Arch Linux, you can find Proid in the [[https://aur.archlinux.org/packages/proid][AUR]]. Simply clone the repository and then run ~makepkg -si~, or install it using an AUR helper like paru.
+If you are on Arch Linux, you can find Proid in the [[https://aur.archlinux.org/packages/proid][AUR]]. Simply clone the repository and then run ~makepkg -si~, or install it using an AUR helper like Paru.
 
 * Dependencies
 The only dependency that is required for Proid to run is xdotool. However, you will need Stack to build Proid.
