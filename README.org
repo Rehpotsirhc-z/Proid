@@ -1,12 +1,30 @@
-# Created 2023-06-22 Thu 18:02
+# Created 2024-03-04 Mon 18:10
 #+title: Proid
 #+author: Christopher
 #+property: header-args :tangle "app/Main.hs" :comments link :mkdirp yes
 #+export_file_name: README
-
+* Table of Contents :toc:
+- [[#introduction][Introduction]]
+- [[#installation][Installation]]
+  - [[#arch-linux][Arch Linux]]
+- [[#dependencies][Dependencies]]
+- [[#usage][Usage]]
+- [[#license][License]]
+- [[#imports][Imports]]
+- [[#data-types][Data Types]]
+- [[#main][Main]]
+- [[#arguments][Arguments]]
+- [[#actions][Actions]]
+  - [[#hide][Hide]]
+  - [[#show][Show]]
+- [[#file-operations][File Operations]]
+  - [[#write][Write]]
+  - [[#erase][Erase]]
+- [[#error-messages][Error Messages]]
+- [[#errors][Errors]]
+- [[#help][Help]]
 * Introduction
 Proid is a command-line tool that allows you to hide and show windows in X.
-
 * Installation
 The easiest way to build Proid is to use [[https://docs.haskellstack.org/en/stable/install_and_upgrade/][Stack]]:
 
@@ -17,14 +35,11 @@ stack setup
 stack install
 #+end_src sh
 
-~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the Proid executable into =~/.local/bin=, which you should add to your PATH.
-
+~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the Proid executable into =~/.local/bin=, which you should add to your =PATH=.
 ** Arch Linux
 If you are on Arch Linux, you can find Proid in the [[https://aur.archlinux.org/packages/proid][AUR]]. Simply clone the repository and then run ~makepkg -si~, or install it using an AUR helper like Paru.
-
 * Dependencies
 The only dependency that is required for Proid to run is xdotool. However, you will need Stack to build Proid.
-
 * Usage
 To hide the current window, you need to run ~proid hide~. If you run it in a terminal window, it will hide the terminal. It is recommended to bind the Proid options to a keybinding so that it can work on any program.
 
@@ -33,10 +48,8 @@ Proid shows windows in the opposite order that you hid them in. It will show the
 Sometimes, you may need two lists for windows to hide. You can use ~proid deshide~ to hide a window, saving it to a special list. The next time you do ~proid show~, that window will not show and it will instead show the window hidden normally. You can then show the special windows by doing ~proid desshow~.
 
 This is useful when you want to switch between seeing two windows. If you were to hide them both with ~proid hide~, you would have to show both of them and then hide one to see it. With ~proid deshide~, you will be able to make one of them special and one of them normal, allowing you to alternate which one you want to be shown.
-
 * License
 GNU GPLv3
-
 * Imports
 This section imports some modules and sets language pragmas.
 
@@ -72,14 +85,12 @@ import System.IO.Error
 import System.IO.Temp (writeSystemTempFile)
 import System.Process (callProcess, readProcess)
 #+end_src
-
 * Data Types
 Here we define the ~ProidMode~ data type that we will use later.
 
 #+begin_src haskell
 data ProidMode = Read | Write deriving (Show, Read, Eq)
 #+end_src
-
 * Main
 This section gets the arguments passed into the program and passes them into ~handleArgs~.
 
@@ -90,7 +101,6 @@ main = do
   tmpDir <- getTemporaryDirectory
   handleArgs tmpDir args
 #+end_src
-
 * Arguments
 This section handles arguments by displaying errors if the syntax isn't met.
 
@@ -127,10 +137,8 @@ dispatch _ Nothing = do
   exitFailure
 dispatch tmpDir (Just (action, filename)) = action tmpDir filename
 #+end_src
-
 * Actions
 Actions are the core functionality of Proid. You can either hide or show windows, which are made possible with ~proidHide~ and ~proidShow~ respectively.
-
 ** Hide
 This function allows the user the hide windows. It uses xdotool to get the window ID and store it a log file. Then it uses xdotool to hide that window from the user. Potential errors are caught using the handlers defined above.
 
@@ -144,7 +152,6 @@ proidHide tmpDir filename = do
   callProcess "xdotool" ["windowunmap", init proid]
     `catchIOError` xdotoolError
 #+end_src
-
 ** Show
 This function allows the user to show windows. It reads the last window ID from the log and removes that line. Then it uses xdotool to show the window again.
 
@@ -155,10 +162,8 @@ proidShow tmpDir filename = do
   callProcess "xdotool" ["windowmap", proid]
     `catchIOError` xdotoolError
 #+end_src
-
 * File Operations
 This section contains the "meat" of the program; most of the functionality from previous functions are defined here. It contains the ~writeToFile~ function and the ~eraseFromFile~ function, to add and remove the window ID from the log.
-
 ** Write
 This function appends text to a file. Errors are caught with ~handleLogError~.
 
@@ -177,7 +182,6 @@ writeToFile filename string =
           >> exitFailure
     )
 #+end_src
-
 ** Erase
 This function removes the last line from a file and returns that line.
 
@@ -207,7 +211,6 @@ eraseFromFile path = do
         `catchIOError` (\e -> printError (handleLogError Write path "" e) >> exitFailure)
       return proid
 #+end_src
-
 * Error Messages
 This section defines a helper function that will print errors in red.
 
@@ -219,7 +222,6 @@ printError str =
       ++ str
       ++ setSGRCode [Reset]
 #+end_src
-
 * Errors
 This section defines some functions that will handle potential errors.
 
@@ -246,7 +248,6 @@ xdotoolError _ = do
   printError "Failed to run xdotool (maybe it is not installed)"
   exitFailure
 #+end_src
-
 * Help
 In this section, a simple function is defined that prints a help message.
 

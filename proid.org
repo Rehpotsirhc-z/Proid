@@ -3,6 +3,27 @@
 #+property: header-args :tangle "app/Main.hs" :comments link :mkdirp yes
 #+export_file_name: README
 
+* Table of Contents :toc:
+- [[#introduction][Introduction]]
+- [[#installation][Installation]]
+  - [[#arch-linux][Arch Linux]]
+- [[#dependencies][Dependencies]]
+- [[#usage][Usage]]
+- [[#license][License]]
+- [[#imports][Imports]]
+- [[#data-types][Data Types]]
+- [[#main][Main]]
+- [[#arguments][Arguments]]
+- [[#actions][Actions]]
+  - [[#hide][Hide]]
+  - [[#show][Show]]
+- [[#file-operations][File Operations]]
+  - [[#write][Write]]
+  - [[#erase][Erase]]
+- [[#error-messages][Error Messages]]
+- [[#errors][Errors]]
+- [[#help][Help]]
+
 * Introduction
 Proid is a command-line tool that allows you to hide and show windows in X.
 
@@ -16,7 +37,7 @@ stack setup
 stack install
 #+end_src sh
 
-~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the Proid executable into =~/.local/bin=, which you should add to your PATH.
+~stack setup~ will automatically download the GHC compiler if you don't have it. ~stack install~ will install the Proid executable into =~/.local/bin=, which you should add to your =PATH=.
 
 ** Arch Linux
 If you are on Arch Linux, you can find Proid in the [[https://aur.archlinux.org/packages/proid][AUR]]. Simply clone the repository and then run ~makepkg -si~, or install it using an AUR helper like Paru.
