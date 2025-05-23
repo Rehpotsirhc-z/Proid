@@ -1,3 +1,9 @@
+-- [[file:../proid.org::*License][License:1]]
+-- SPDX-FileCopyrightText: 2025 Rehpotsirhc
+--
+-- SPDX-License-Identifier: GPL-3.0-or-later
+-- License:1 ends here
+
 -- [[file:../proid.org::*Imports][Imports:1]]
 {-# LANGUAGE QuasiQuotes #-}
 

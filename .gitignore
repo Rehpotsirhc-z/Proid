@@ -1,2 +1,32 @@
+# SPDX-FileCopyrightText: 2025 Rehpotsirhc
+#
+# SPDX-License-Identifier: CC0-1.0
+
 .stack-work/
 *~
+
+bin/
+
+dist
+dist-*
+cabal-dev
+*.o
+*.hi
+*.hie
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
+*.eventlog
+.stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*

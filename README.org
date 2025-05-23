@@ -1,4 +1,4 @@
-# Created 2024-03-04 Mon 18:10
+# Created 2025-05-23 Fri 12:16
 #+title: Proid
 #+author: Christopher
 #+property: header-args :tangle "app/Main.hs" :comments link :mkdirp yes
@@ -49,7 +49,13 @@ Sometimes, you may need two lists for windows to hide. You can use ~proid deshid
 
 This is useful when you want to switch between seeing two windows. If you were to hide them both with ~proid hide~, you would have to show both of them and then hide one to see it. With ~proid deshide~, you will be able to make one of them special and one of them normal, allowing you to alternate which one you want to be shown.
 * License
-GNU GPLv3
+This program uses GPL-3.0-or-later.
+
+#+begin_src haskell
+-- SPDX-FileCopyrightText: 2025 Rehpotsirhc
+--
+-- SPDX-License-Identifier: GPL-3.0-or-later
+#+end_src
 * Imports
 This section imports some modules and sets language pragmas.
 
